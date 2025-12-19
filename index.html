@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Leaf Charge" />
+  <title>Leaf Charge</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #05070f;
+      --card: #0c1224;
+      --accent: #4cffc0;
+      --accent-soft: rgba(76,255,192,0.18);
+      --text: #e9ecf5;
+      --muted: #8b93a7;
+      --danger: #ff6b6b;
+      --logo-color: #dcdcdc;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Orbitron', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #0f1633, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(255,255,255,0.4), 0 0 12px rgba(76,255,192,0.2);
+    }
+
+    .card {
+      background: linear-gradient(160deg, #111a38, var(--card));
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.45);
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      letter-spacing: 0.8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.05rem;
+      border-radius: 14px;
+      border: none;
+      background: #070b1d;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus {
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .battery {
+      width: 140px;
+      height: 70px;
+      border: 3px solid var(--accent);
+      border-radius: 10px;
+      position: relative;
+      margin: 10px auto 6px;
+      overflow: hidden;
+    }
+
+    .battery::after {
+      content: '';
+      position: absolute;
+      right: -8px;
+      top: 22px;
+      width: 6px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .battery-level {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, #1cff9a, #4cffc0);
+      border-radius: 6px;
+      transition: width 0.4s ease, background-position 2s linear;
+      background-size: 200% 100%;
+      animation: flow 4s linear infinite;
+    }
+
+    @keyframes flow {
+      0% { background-position: 0% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .range-value {
+      text-align: center;
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 8px 0 4px;
+      transition: transform 0.2s ease;
+    }
+
+    input[type=range] {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .result {
+      text-align: center;
+      padding: 26px 16px;
+      border-radius: 24px;
+      background: linear-gradient(160deg, #071c24, #050e18);
+      animation: glow 3s infinite ease-in-out;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 0 rgba(76,255,192,0); }
+      50% { box-shadow: 0 0 26px rgba(76,255,192,0.35); }
+      100% { box-shadow: 0 0 0 rgba(76,255,192,0); }
+    }
+
+    .time {
+      font-size: 2.6rem;
+      font-weight: 700;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+
+    .warning {
+      margin-top: 14px;
+      color: var(--danger);
+      font-size: 0.85rem;
+    }
+
+    .charge-duration {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Leaf Charge</h1>
+
+    <div class="card">
+      <label>Pourcentage actuel</label>
+      <div class="battery">
+        <div class="battery-level" id="batteryLevel"></div>
+      </div>
+      <div class="range-value" id="percentValue">50%</div>
+      <input type="range" min="1" max="99" value="50" id="percent" />
+    </div>
+
+    <div class="card">
+      <label>Heure de départ souhaitée</label>
+      <input type="time" id="departure" />
+    </div>
+
+    <div class="result">
+      <div>Branche la voiture à</div>
+      <div class="time" id="plugTime">--:--</div>
+      <div class="charge-duration" id="chargeDuration"></div>
+      <div class="warning" id="warning"></div>
+    </div>
+  </div>
+
+  <script>
+    const percentInput = document.getElementById('percent');
+    const percentValue = document.getElementById('percentValue');
+    const batteryLevel = document.getElementById('batteryLevel');
+    const departureInput = document.getElementById('departure');
+    const plugTimeEl = document.getElementById('plugTime');
+    const warningEl = document.getElementById('warning');
+    const chargeDurationEl = document.getElementById('chargeDuration');
+
+    const BATTERY_KWH = 40;
+    const REAL_POWER_KW = 2.1;
+
+    function calculate() {
+      const percent = parseInt(percentInput.value);
+      percentValue.textContent = percent + '%';
+      batteryLevel.style.width = percent + '%';
+      percentValue.style.transform = 'scale(1.05)';
+      setTimeout(() => percentValue.style.transform = 'scale(1)', 150);
+
+      const time = departureInput.value;
+      if (!time) {
+        plugTimeEl.textContent = '--:--';
+        chargeDurationEl.textContent = '';
+        warningEl.textContent = '';
+        return;
+      }
+
+      const [h, m] = time.split(':').map(Number);
+      const now = new Date();
+      const departure = new Date();
+      departure.setHours(h, m, 0, 0);
+      if (departure <= now) {
+        departure.setDate(departure.getDate() + 1);
+      }
+
+      const neededKwh = BATTERY_KWH * (1 - percent / 100);
+      const chargeHours = neededKwh / REAL_POWER_KW;
+      const chargeMs = chargeHours * 3600000;
+      const plugDate = new Date(departure.getTime() - chargeMs);
+
+      const hh = plugDate.getHours().toString().padStart(2, '0');
+      const mm = plugDate.getMinutes().toString().padStart(2, '0');
+      plugTimeEl.textContent = `${hh}:${mm}`;
+
+      const totalMinutes = Math.round(chargeHours * 60);
+      const hCharge = Math.floor(totalMinutes / 60);
+      const mCharge = totalMinutes % 60;
+      chargeDurationEl.textContent = `Temps de charge estimé : ${hCharge} h ${mCharge} min`;
+
+      const remainingMs = departure.getTime() - now.getTime();
+      if (remainingMs < chargeMs) {
+        warningEl.textContent = '⚠️ Trop tard pour atteindre 100 % à cette heure.';
+      } else {
+        warningEl.textContent = '';
+      }
+
+      localStorage.setItem('leafPercent', percent);
+      localStorage.setItem('leafDeparture', time);
+    }
+
+    percentInput.addEventListener('input', calculate);
+    departureInput.addEventListener('change', calculate);
+
+    const savedPercent = localStorage.getItem('leafPercent');
+    const savedDeparture = localStorage.getItem('leafDeparture');
+    if (savedPercent) percentInput.value = savedPercent;
+    if (savedDeparture) departureInput.value = savedDeparture;
+
+    calculate();
+  </script>
+</body>
+</html>
